@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>ClassTrack — Student</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f0f4ff;--s1:#ffffff;--s2:#f7f9ff;--border:#e2e8f4;--border2:#c7d2ea;
+  --accent:#6366f1;--accent-d:#4f52d4;--accent-l:#818cf8;--accent-bg:#eef0ff;
+  --green:#16a34a;--green-l:#22c55e;--green-bg:#f0fdf4;--green-border:#bbf7d0;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --yellow:#d97706;--yellow-bg:#fffbeb;--yellow-border:#fde68a;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --text:#0f172a;--muted:#64748b;--muted2:#94a3b8;
+  --mono:'DM Mono',monospace;--font:'Plus Jakarta Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{background:var(--s1);border-bottom:1px solid var(--border);padding:.65rem 1.25rem;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:15px;font-weight:700;color:var(--text);}
+.logo span{color:var(--accent);}
+.session-chip{font-size:11px;background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-l);padding:3px 10px;border-radius:20px;font-weight:600;display:none;}
+
+.wrap{flex:1;display:flex;flex-direction:column;max-width:480px;margin:0 auto;width:100%;padding:1.25rem 1rem 2rem;}
+
+/* CONN */
+.conn-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem;}
+.conn-card h2{font-size:17px;font-weight:700;margin-bottom:6px;}
+.conn-card p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px;font-weight:500;}
+.field input,.field select{width:100%;padding:11px 14px;background:var(--s2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:var(--font);margin-bottom:10px;-webkit-appearance:none;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+
+/* MAIN CARD */
+.main-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:1.5rem;margin-bottom:1rem;text-align:center;}
+.main-card .session-tag{font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-l);padding:4px 14px;border-radius:20px;display:inline-block;margin-bottom:12px;}
+.main-card h1{font-size:22px;font-weight:800;margin-bottom:4px;}
+.main-card .sub-info{font-size:13px;color:var(--muted);margin-bottom:1.25rem;}
+
+/* NAME INPUT */
+.name-section{margin-bottom:1.25rem;}
+.name-section label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;}
+.name-input{width:100%;padding:13px 16px;background:var(--s2);border:2px solid var(--border2);border-radius:12px;font-size:16px;font-family:var(--font);color:var(--text);text-align:center;-webkit-appearance:none;}
+.name-input:focus{outline:none;border-color:var(--accent);background:var(--accent-bg);}
+.name-input:disabled{background:var(--s2);color:var(--muted);cursor:not-allowed;}
+
+/* BIG BUTTONS */
+.action-btn{width:100%;padding:18px;font-size:16px;font-weight:700;border-radius:16px;border:none;cursor:pointer;font-family:var(--font);transition:transform .1s,opacity .15s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;}
+.action-btn:active{transform:scale(.96);}
+.action-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+.btn-present{background:var(--green);color:#fff;font-size:18px;}
+.btn-present.done{background:var(--green-bg);color:var(--green);border:2px solid var(--green-border);}
+.btn-recite{background:var(--accent);color:#fff;font-size:17px;}
+.btn-recite:hover:not(:disabled){opacity:.9;}
+
+/* SCORE DISPLAY */
+.score-display{background:var(--s2);border:1.5px solid var(--border2);border-radius:14px;padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.score-left{}
+.score-count{font-size:36px;font-weight:800;font-family:var(--mono);color:var(--accent);line-height:1;}
+.score-sub{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em;}
+.grade-badge{text-align:right;}
+.grade-pill{display:inline-block;padding:6px 18px;border-radius:12px;font-size:15px;font-weight:700;}
+.grade-label{font-size:11px;color:var(--muted);margin-top:3px;text-align:right;}
+
+/* RECITATION LOG */
+.rec-log{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;margin-bottom:10px;}
+.rec-log-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.rec-entries{display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;}
+.rec-entry{display:flex;align-items:center;justify-content:space-between;background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;}
+.rec-entry .num{font-family:var(--mono);font-weight:600;color:var(--accent);}
+.rec-entry .time{color:var(--muted);}
+.rec-entry .pts{font-family:var(--mono);color:var(--green);font-weight:600;}
+
+/* STATUS */
+.status-banner{border-radius:12px;padding:.75rem 1rem;font-size:13px;font-weight:600;text-align:center;margin-bottom:10px;}
+.status-present{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.status-waiting{background:var(--yellow-bg);color:var(--yellow);border:1px solid var(--yellow-border);}
+.status-closed{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+
+/* WAITING */
+.wait-wrap{text-align:center;padding:3rem 1rem;}
+.wait-ico{font-size:48px;margin-bottom:12px;}
+.wait-wrap h2{font-size:18px;font-weight:700;margin-bottom:6px;}
+.wait-wrap p{font-size:13px;color:var(--muted);line-height:1.6;}
+.spin{display:inline-block;width:24px;height:24px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-top:14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* BUTTON */
+.btn{padding:12px 20px;font-size:14px;font-weight:600;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);transition:opacity .15s;width:100%;margin-top:6px;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--muted);}
+
+/* COLOR VARIANTS for grade */
+.gc-green{background:var(--green-bg);color:var(--green);border:2px solid var(--green-border);}
+.gc-blue{background:var(--blue-bg);color:var(--blue);border:2px solid var(--blue-border);}
+.gc-yellow{background:var(--yellow-bg);color:var(--yellow);border:2px solid var(--yellow-border);}
+.gc-red{background:var(--red-bg);color:var(--red);border:2px solid var(--red-border);}
+.gc-purple{background:var(--purple-bg);color:var(--purple);border:2px solid var(--purple-border);}
+.gc-gray{background:var(--s2);color:var(--muted);border:2px solid var(--border2);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Class<span>Track</span></div>
+  <div class="session-chip" id="sessChip">No session</div>
+</div>
+
+<div class="wrap" id="wrap"></div>
+
+<script>
+let CFG={url:'',key:'',table:'class_records'};
+let ST={phase:'conn',name:'',present:false,recitations:[],rowId:null,session:null,gradeRanges:[],ptsPerRecitation:1};
+
+function saveCFG(){try{localStorage.setItem('ct_cfg',JSON.stringify(CFG));}catch(e){}}
+function loadCFG(){try{const d=localStorage.getItem('ct_cfg');if(d)CFG={...CFG,...JSON.parse(d)};}catch(e){}}
+function saveST(){try{localStorage.setItem('ct_st',JSON.stringify(ST));}catch(e){}}
+function loadST(){try{const d=localStorage.getItem('ct_st');if(d)ST={...ST,...JSON.parse(d)};}catch(e){}}
+
+loadCFG();loadST();
+
+async function sb(method,path,body){
+  const r=await fetch(CFG.url+'/rest/v1/'+path,{
+    method,headers:{'apikey':CFG.key,'Authorization':'Bearer '+CFG.key,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:body?JSON.stringify(body):undefined
+  });
+  if(!r.ok){const t=await r.text();throw new Error(t);}
+  return r.status===204?[]:r.json();
+}
+
+async function fetchSession(){
+  const rows=await sb('GET',CFG.table+'?student_name=eq.__SESSION__&status=eq.open&order=recorded_at.desc&limit=1');
+  return rows[0]||null;
+}
+
+function getGrade(pts,ranges){
+  for(const r of ranges){if(pts>=r.min&&pts<=r.max)return r;}
+  return{label:'—',grade:'—',color:'gray'};
+}
+function totalPts(){return ST.recitations.length*ST.ptsPerRecitation;}
+
+function render(){
+  const w=document.getElementById('wrap');
+  w.innerHTML='';
+  if(!CFG.url||!CFG.key){renderConn(w);return;}
+  if(ST.phase==='conn'||ST.phase==='waiting'){renderWaiting(w);return;}
+  if(ST.phase==='active'){renderActive(w);return;}
+  if(ST.phase==='closed'){renderClosed(w);return;}
+}
+
+function renderConn(w){
+  w.innerHTML=`
+    <div class="conn-card">
+      <h2>Welcome to ClassTrack</h2>
+      <p>Enter the database details to connect. Your teacher will provide these.</p>
+      <div class="field">
+        <label>Supabase Project URL</label>
+        <input id="sbU" placeholder="https://xxxx.supabase.co" value="${CFG.url}" type="url"/>
+        <label>Publishable Key</label>
+        <input id="sbK" placeholder="sb_publishable_..." value="${CFG.key}"/>
+      </div>
+      <button class="btn btn-primary" onclick="doConn()">Connect →</button>
+    </div>`;
+}
+
+async function doConn(){
+  CFG.url=document.getElementById('sbU').value.trim().replace(/\/$/,'');
+  CFG.key=document.getElementById('sbK').value.trim();
+  saveCFG();
+  try{
+    const sess=await fetchSession();
+    if(sess){
+      loadSessionData(sess);
+      ST.phase='active';saveST();render();
+    } else {
+      ST.phase='waiting';saveST();render();
+    }
+  }catch(e){alert('Could not connect: '+e.message);}
+}
+
+function loadSessionData(sess){
+  ST.session=sess;
+  try{ST.gradeRanges=JSON.parse(sess.grade_label||'[]');}catch(e){ST.gradeRanges=[];}
+  ST.ptsPerRecitation=sess.recitations||1;
+  // Update chip
+  const chip=document.getElementById('sessChip');
+  chip.style.display='block';
+  chip.textContent=sess.subject+' · '+sess.date;
+}
+
+async function renderWaiting(w){
+  w.innerHTML=`
+    <div class="wait-wrap">
+      <div class="wait-ico">⏳</div>
+      <h2>No active session</h2>
+      <p>Your teacher hasn't opened a session yet.<br/>This page will check automatically every few seconds.</p>
+      <div class="spin"></div>
+    </div>`;
+  // Poll for session
+  setTimeout(async()=>{
+    try{
+      const sess=await fetchSession();
+      if(sess){loadSessionData(sess);ST.phase='active';saveST();render();}
+      else render();
+    }catch(e){render();}
+  },4000);
+}
+
+function renderActive(w){
+  const sess=ST.session;
+  const pts=totalPts();
+  const g=ST.gradeRanges.length?getGrade(pts,ST.gradeRanges):{label:'—',grade:'—',color:'gray'};
+  const recLog=ST.recitations.map((t,i)=>`
+    <div class="rec-entry">
+      <span class="num">#${i+1}</span>
+      <span>${t}</span>
+      <span class="pts">+${ST.ptsPerRecitation} pt${ST.ptsPerRecitation>1?'s':''}</span>
+    </div>`).join('');
+
+  w.innerHTML=`
+    <div class="main-card">
+      <div class="session-tag">📚 ${sess.subject}</div>
+      <h1>${sess.date}</h1>
+      <div class="sub-info">${sess.label||'Tap to mark your attendance and recitation'}</div>
+
+      <div class="name-section">
+        <label>Your full name</label>
+        <input class="name-input" id="nameInput" placeholder="Type your name here…" value="${ST.name}" ${ST.present?'disabled':''} autocomplete="name"/>
+      </div>
+
+      ${ST.present?`<div class="status-banner status-present">✅ You are marked Present</div>`:''}
+
+      <button class="action-btn btn-present ${ST.present?'done':''}" onclick="markPresent()" ${ST.present?'disabled':''}>
+        ${ST.present?'✅ Marked Present':'👋 I Am Present'}
+      </button>
+
+      <button class="action-btn btn-recite" onclick="markRecite()" ${!ST.present?'disabled':''}>
+        🙋 I Recited! ${ST.recitations.length>0?`(${ST.recitations.length}×)`:''}
+      </button>
+    </div>
+
+    ${ST.recitations.length>0?`
+    <div class="score-display">
+      <div class="score-left">
+        <div class="score-count">${ST.recitations.length}</div>
+        <div class="score-sub">Recitation${ST.recitations.length>1?'s':''} · ${pts} pt${pts!==1?'s':''}</div>
+      </div>
+      <div class="grade-badge">
+        <div class="grade-pill gc-${g.color}">${g.grade}</div>
+        <div class="grade-label">${g.label}</div>
+      </div>
+    </div>
+    <div class="rec-log">
+      <div class="rec-log-title">📋 Recitation log</div>
+      <div class="rec-entries">${recLog}</div>
+    </div>`:''}
+
+    <button class="btn btn-outline" onclick="resetStudent()" style="margin-top:6px;font-size:12px;">↩ Different student</button>
+  `;
+
+  if(!ST.present){
+    document.getElementById('nameInput').addEventListener('input',e=>ST.name=e.target.value);
+  }
+}
+
+async function markPresent(){
+  const nameEl=document.getElementById('nameInput');
+  if(nameEl) ST.name=nameEl.value.trim();
+  if(!ST.name){alert('Please enter your full name first!');return;}
+  ST.present=true;
+  const pts=totalPts();
+  const g=ST.gradeRanges.length?getGrade(pts,ST.gradeRanges):{label:'—',grade:'—',color:'gray'};
+  const payload={
+    session_id:ST.session.session_id,
+    subject:ST.session.subject,
+    student_name:ST.name,
+    status:'present',
+    recitations:ST.recitations.length,
+    points:pts,
+    grade_label:g.label,
+    grade_code:g.grade,
+    date:ST.session.date
+  };
+  try{
+    if(ST.rowId){
+      await sb('PATCH',CFG.table+'?id=eq.'+ST.rowId,payload);
+    } else {
+      const rows=await sb('POST',CFG.table,payload);
+      if(rows.length) ST.rowId=rows[0].id;
+    }
+    saveST();render();
+  }catch(e){alert('Error saving: '+e.message);ST.present=false;render();}
+}
+
+async function markRecite(){
+  if(!ST.present){alert('Please mark yourself as present first!');return;}
+  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  ST.recitations.push(now);
+  const pts=totalPts();
+  const g=ST.gradeRanges.length?getGrade(pts,ST.gradeRanges):{label:'—',grade:'—',color:'gray'};
+  const payload={
+    recitations:ST.recitations.length,
+    points:pts,
+    status:'recited',
+    grade_label:g.label,
+    grade_code:g.grade
+  };
+  try{
+    if(ST.rowId){
+      await sb('PATCH',CFG.table+'?id=eq.'+ST.rowId,payload);
+    }
+    saveST();render();
+    // Flash feedback
+    const btn=document.querySelector('.btn-recite');
+    if(btn){
+      btn.style.background='#22c55e';
+      btn.textContent='✅ Recitation recorded!';
+      setTimeout(()=>{btn.style.background='';render();},1000);
+    }
+  }catch(e){ST.recitations.pop();alert('Error: '+e.message);render();}
+}
+
+function renderClosed(w){
+  w.innerHTML=`
+    <div class="wait-wrap">
+      <div class="wait-ico">🔒</div>
+      <h2>Session closed</h2>
+      <p>The teacher has ended this session.<br/>Your attendance and recitations have been saved.</p>
+      ${ST.recitations.length>0?`
+      <div style="margin-top:1.5rem;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;padding:1.25rem;text-align:center;">
+        <div style="font-size:13px;color:#16a34a;font-weight:600;margin-bottom:4px;">Your summary</div>
+        <div style="font-size:32px;font-weight:800;font-family:var(--mono);color:#16a34a;">${ST.recitations.length} recitation${ST.recitations.length>1?'s':''}</div>
+        <div style="font-size:14px;color:#64748b;margin-top:4px;">${totalPts()} points earned</div>
+      </div>`:''}
+      <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="resetStudent()">New student / session</button>
+    </div>`;
+}
+
+function resetStudent(){
+  if(ST.present&&!confirm('Reset for a new student?'))return;
+  ST={...ST,name:'',present:false,recitations:[],rowId:null,phase:'active'};
+  // Check if session still open
+  checkSessionStillOpen();
+}
+
+async function checkSessionStillOpen(){
+  try{
+    const sess=await fetchSession();
+    if(sess){loadSessionData(sess);ST.phase='active';}
+    else ST.phase='waiting';
+    saveST();render();
+  }catch(e){render();}
+}
+
+// Poll for session close
+setInterval(async()=>{
+  if(ST.phase!=='active')return;
+  try{
+    const rows=await sb('GET',CFG.table+'?session_id=eq.'+ST.session?.session_id+'&student_name=eq.__SESSION__');
+    if(rows[0]?.status==='closed'){ST.phase='closed';saveST();render();}
+  }catch(e){}
+},8000);
+
+// Init
+(async()=>{
+  if(CFG.url&&CFG.key){
+    try{
+      const sess=await fetchSession();
+      if(sess){loadSessionData(sess);if(ST.phase==='conn'||ST.phase==='waiting'){ST.phase='active';saveST();}}
+      else if(ST.phase==='active'){ST.phase='waiting';saveST();}
+    }catch(e){}
+  }
+  render();
+})();
+</script>
+</body>
+</html>
